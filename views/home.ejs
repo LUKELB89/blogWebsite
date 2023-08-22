@@ -6,15 +6,20 @@
     </p>
 
     <% postContent.forEach(post=> { %>
-        <h1>
-            <%= post.title %>
-        </h1>
-        <p>
-           <%= post.content %> 
-        </p>
-            <% }) %>
+        <% const blogContent=post.content %>
+            <% const truncContent=blogContent.substring(0, 100) + "..." %>
+                <h1>
+                    <%= post.title %>
+                </h1>
+                <p>
+                    <%= truncContent %>
+                        <a href="http://localhost:3000/posts/<%= post.title %>">Read More</a>
+                </p>
+                <% }) %>
 
 
 
 
-                <%- include("partials/footer.ejs") %>
+                    <%- include("partials/footer.ejs") %>
+
+                        <!-- class="blog-content" -->

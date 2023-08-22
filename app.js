@@ -36,6 +36,10 @@ app.get('/contact', (req, res) => {
   )
 })
 
+app.get('/compose', (req, res) => {
+  res.render('compose.ejs')
+})
+
 app.post('/compose', (req, res) => {
   let post = {
     title: req.body.titlePost,
@@ -52,25 +56,45 @@ app.get('/compose', (req, res) => {
   res.render('compose.ejs')
 })
 
-app.get('/posts/:newPost',(req, res) => {
+app.get('/posts/:newPost', (req, res) => {
   let newPostTitle = _.lowerCase(req.params.newPost);
   // const cleanedPostTitle = _.replace(_.lowerCase(newPostTitle), /[-/]/g, '')
-  posts.forEach(post=> {
+
+  posts.forEach(post => {
     const postedTitle = _.lowerCase(post.title);
     // const arrayTitle = _.replace(_.lowerCase(postedTitle), /[-/]/g, '')
-  
-    if(postedTitle === newPostTitle) {
-    console.log("Match has been found!")
-  } else {
-    console.log("No match has been found")
-  }
- });
-  
-console.log()
+    if (postedTitle === newPostTitle) {
+      res.render("post.ejs", {
+        title: post.title,
+        content: post.content,
+      })
+    }
+  });
 });
 
+// app.get('/posts/:newPost', (req, res) => {
+//   let newPostTitle = _.lowerCase(req.params.newPost);
+//   // const cleanedPostTitle = _.replace(_.lowerCase(newPostTitle), /[-/]/g, '')
 
+//   let foundTitle = null;
+//   let foundContent = null;
 
+//   posts.forEach(post => {
+//     const postedTitle = _.lowerCase(post.title);
+//     // const arrayTitle = _.replace(_.lowerCase(postedTitle), /[-/]/g, '')
+
+//     if (postedTitle === newPostTitle) {
+//       let foundTitle = post.title;
+//       let foundContent = post.content;
+
+//       res.render("post.ejs", {
+//         title: foundTitle,
+//         content: foundContent
+//       })
+//     }
+//     console.log();
+//   });
+// });
 
 
 

@@ -37,3 +37,11 @@
 .my-custom-margin {
   margin-top: 15px; /* Adjust this value as needed */
 }
+
+.blog-content {
+  max-height: 2em; /* You can adjust this to control the height of the preview */
+  width: 50%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

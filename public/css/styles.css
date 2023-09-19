@@ -1,3 +1,7 @@
+body {
+  font-family: "Delicious Handrawn", cursive;
+}
+
 .container-fluid {
   padding-top: 70px;
   padding-bottom: 70px;
@@ -12,7 +16,7 @@
   letter-spacing: 5px;
 }
 .navbar-nav li a:hover {
-  color: #1abc9c !important;
+  color: #bc1f1a !important;
 }
 
 .footer-padding {
@@ -25,7 +29,7 @@
   bottom: 0;
   width: 100%;
   height: 60px;
-  background-color: #1abc9c;
+  background-color: #bc1f1a;
 }
 
 .footer p {
@@ -44,4 +48,9 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  font-family: "Delicious Handrawn", cursive;
+}
+
+a {
+  color: #bc1f1a;
 }

@@ -2,8 +2,38 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require('mongoose')
 const _ = require('lodash');
 const ejs = require("ejs");
+
+// Connect to the database
+async function connectToMongoDB() {
+  try {
+    await mongoose.connect('mongodb://127.0.0.1:27017/blogPostsDB', { useNewUrlParser: true });
+    console.log('Connected to MongoDB successfully');
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+  }
+}
+
+connectToMongoDB();
+
+
+const postSchema = new mongoose.Schema({
+  title: String,
+  content: String
+});
+
+const Post = mongoose.model('Post', postSchema);
+
+const newPostDB = new Post({
+  title: "First try",
+  content: "First add to the mongoDB local database as a test"
+})
+
+
+//newPostDB.save()
+
 
 const homeStartingContent = "Lacus vel facilisis volutpat est velit egestas dui id ornare. Semper auctor neque vitae tempus quam. Sit amet cursus sit amet dictum sit amet justo. Viverra tellus in hac habitasse. Imperdiet proin fermentum leo vel orci porta. Donec ultrices tincidunt arcu non sodales neque sodales ut. Mattis molestie a iaculis at erat pellentesque adipiscing. Magnis dis parturient montes nascetur ridiculus mus mauris vitae ultricies. Adipiscing elit ut aliquam purus sit amet luctus venenatis lectus. Ultrices vitae auctor eu augue ut lectus arcu bibendum at. Odio euismod lacinia at quis risus sed vulputate odio ut. Cursus mattis molestie a iaculis at erat pellentesque adipiscing.";
 const aboutContent = "Hac habitasse platea dictumst vestibulum rhoncus est pellentesque. Dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Non diam phasellus vestibulum lorem sed. Platea dictumst quisque sagittis purus sit. Egestas sed sed risus pretium quam vulputate dignissim suspendisse. Mauris in aliquam sem fringilla. Semper risus in hendrerit gravida rutrum quisque non tellus orci. Amet massa vitae tortor condimentum lacinia quis vel eros. Enim ut tellus elementum sagittis vitae. Mauris ultrices eros in cursus turpis massa tincidunt dui.";
@@ -18,10 +48,17 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-app.get('/', (req, res) => {
-  res.render('home.ejs',
-    { homeText: homeStartingContent, postContent: posts }
-  );
+app.get('/', async (req, res) => {
+  try {
+    const posts = await Post.find({})
+
+    res.render('home.ejs',
+      { homeText: homeStartingContent, postContent: posts }
+    );
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+    res.status(500).send('Error fetching tasks');
+  }
 })
 
 app.get('/about', (req, res) => {
@@ -41,14 +78,11 @@ app.get('/compose', (req, res) => {
 })
 
 app.post('/compose', (req, res) => {
-  let post = {
+  let post = new Post({
     title: req.body.titlePost,
     content: req.body.postBody,
-  }
-  // res.render('home.ejs',
-  //   { homeText: homeStartingContent }
-  // )
-  posts.push(post);
+  })
+  post.save();
   res.redirect('/');
 })
 
@@ -56,52 +90,25 @@ app.get('/compose', (req, res) => {
   res.render('compose.ejs')
 })
 
-app.get('/posts/:newPost', (req, res) => {
+app.get('/posts/:newPost', async (req, res) => {
   let newPostTitle = _.lowerCase(req.params.newPost);
-  // const cleanedPostTitle = _.replace(_.lowerCase(newPostTitle), /[-/]/g, '')
+  try {
+    const posts = await Post.find({})
 
-  posts.forEach(post => {
-    const postedTitle = _.lowerCase(post.title);
-    // const arrayTitle = _.replace(_.lowerCase(postedTitle), /[-/]/g, '')
-    if (postedTitle === newPostTitle) {
-      res.render("post.ejs", {
-        title: post.title,
-        content: post.content,
-      })
-    }
-  });
+    posts.forEach(post => {
+      const postedTitle = _.lowerCase(post.title);
+      if (postedTitle === newPostTitle) {
+        res.render("post.ejs", {
+          title: post.title,
+          content: post.content,
+        })
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+    res.status(500).send('Error fetching tasks');
+  }
 });
-
-// app.get('/posts/:newPost', (req, res) => {
-//   let newPostTitle = _.lowerCase(req.params.newPost);
-//   // const cleanedPostTitle = _.replace(_.lowerCase(newPostTitle), /[-/]/g, '')
-
-//   let foundTitle = null;
-//   let foundContent = null;
-
-//   posts.forEach(post => {
-//     const postedTitle = _.lowerCase(post.title);
-//     // const arrayTitle = _.replace(_.lowerCase(postedTitle), /[-/]/g, '')
-
-//     if (postedTitle === newPostTitle) {
-//       let foundTitle = post.title;
-//       let foundContent = post.content;
-
-//       res.render("post.ejs", {
-//         title: foundTitle,
-//         content: foundContent
-//       })
-//     }
-//     console.log();
-//   });
-// });
-
-
-
-
-
-
-
 
 
 app.listen(port, () => {
